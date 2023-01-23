@@ -86,27 +86,19 @@ const eventHandler = async (event) => {
     }
   
   } else if (event.message.type === 'text') {
-    if (event.message.text === 'flex') {
-      //https://developers.line.biz/ja/reference/messaging-api/#flex-message
-      return client.replyMessage(event.replyToken,{
-        type: 'flex',
-        altText: 'item list',
-        contents: flexMsg
-      });
-    } else if (event.message.text === 'quick') {
-      //https://developers.line.biz/ja/reference/messaging-api/#quick-reply
+    if (event.message.text === 'traning') {
+      //https://developers.line.biz/ja/reference/messaging-api/#traning-reply
       return client.replyMessage(event.replyToken,{
         type: 'text',
-        text: 'ステッカー欲しいですか❓YesかNoで答えてください, もしくは素敵な写真送って❗️',
+        text: '案内されたトレーニングはやったんか❓YesかNoで答えてや❗️',
         "quickReply": {
           "items": [
             {
               "type": "action",
               "action": {
-                "type":"postback",
+                "type":"message",
                 "label":"Yes",
-                "data": "sticker",
-                "displayText":"ステッカーください❗️"
+                "displayText":"トレーニングやったよ。えらいでしょ🙆"
               }
             },
             {
@@ -114,107 +106,19 @@ const eventHandler = async (event) => {
               "action": {
                 "type":"message",
                 "label":"No",
-                "text":"不要。"
-              }
-            },
-            {
-              "type": "action",
-              "action": {
-                "type": "camera",
-                "label": "camera"
+                "text":"今回のトレーニングはパスで。ごめんな🙅"
               }
             }
           ]
         }
       });
+    }else if (event.message.text === 'point') {
+      //https://developers.line.biz/ja/reference/messaging-api/#point-reply
+      return client.replyMessage(event.replyToken,{
+        type: 'text',
+        text: 'あんたの今のポイントは【９５Ｐ】やで🙌'
+      });
     }
-  } else if (event.message.type === 'image') {
-    //https://developers.line.biz/ja/reference/messaging-api/#image-message
-    const stream = await client.getMessageContent(event.message.id);
-    const file = await getStreamData(stream);
-    const uploadFileName = `${crypto.randomUUID()}.jpg`;
-    let bucketParams = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: uploadFileName,
-        ContentType: "image/jpeg",
-        Body: Buffer.concat(file)
-    };
-    await s3.putObject(bucketParams, function (err, data) {
-      if (err) {
-        console.log(err, err.stack);
-      } else {
-        console.log(data);
-      }
-    });
-    return client.replyMessage(event.replyToken,{
-      type: 'image',
-      originalContentUrl: `https://${process.env.BUCKET_DOMAIN_NAME}/${uploadFileName}`,
-      previewImageUrl: `https://${process.env.BUCKET_DOMAIN_NAME}/${uploadFileName}`
-    });
-
-  } else if (event.message.type === 'audio') {
-    //https://developers.line.biz/ja/reference/messaging-api/#audio-message
-    //durationはこれでとれそう？ > https://www.npmjs.com/package/mp3-duration
-    const stream = await client.getMessageContent(event.message.id);
-    const file = await getStreamData(stream);
-    const uploadFileName = `${crypto.randomUUID()}.mp3`;
-    let bucketParams = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: uploadFileName,
-        ContentType: "audio/mpeg",
-        Body: Buffer.concat(file)
-    };
-    await s3.putObject(bucketParams, function (err, data) {
-      if (err) {
-        console.log(err, err.stack);
-      } else {
-        console.log(data);
-      }
-    });
-    return client.replyMessage(event.replyToken,{
-      type: 'audio',
-      originalContentUrl: `https://${process.env.BUCKET_DOMAIN_NAME}/${uploadFileName}`,
-      duration: 60000
-    });
-  } else if (event.message.type === 'location') {
-    //https://developers.line.biz/ja/reference/messaging-api/#location-message
-    return client.replyMessage(event.replyToken,{
-      type: 'location',
-      title: 'my location',
-      address: event.message.address,
-      latitude: event.message.latitude,
-      longitude: event.message.longitude
-    });
-  }
-
-
-
-/*
-
-  let scanParams = {
-      TableName: 'Table1',
-      ExpressionAttributeNames:{
-          '#u': 'userId'
-      },
-      ExpressionAttributeValues:{
-          ':userId': userId
-      },
-      KeyConditionExpression: '#u = :userId'
-  };
-  let scanResult = await documentClient.query(scanParams).promise();
-
-  let putParams = {
-      TableName: 'Table1',
-      Item:{
-           userId: userId,
-           category: 'カテゴリー３'
-      }
-  };
-  let putResult = await documentClient.put(putParams).promise();
-
-*/
-
-
 
   // create a echoing text message
   const echo = { type: 'text', text: event.message.text };
@@ -412,4 +316,5 @@ const flexMsg = {
       }
     }
   ]
+}
 }
