@@ -10,6 +10,7 @@ export class HandsonLineBotAwsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    /*
     // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.Bucket.html
     const s3Bucket = new Bucket(this, 'Bucket', {
       blockPublicAccess: new BlockPublicAccess({
@@ -23,7 +24,7 @@ export class HandsonLineBotAwsStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
-    
+*/    
     // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_dynamodb.Table.html
     const dynamodbTable = new Table(this, "Table", {
       partitionKey: {
